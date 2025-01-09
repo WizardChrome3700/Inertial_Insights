@@ -15,7 +15,7 @@ const float COORDINATE_SYS_OFFSET_Y = WindowHeight/2;
 
 const int pixelWidth = 5;
 const int pixelHeight = 5;
-const int pixelCount = 240;
+const int pixelCount = 480;
 
 typedef struct Matrix {
     int R;
@@ -503,7 +503,7 @@ void init_shape(Shape* shape) {
             shapeChar[count] = '\0';
             shape->nEdges = 0;
             for(int i = 0; shapeChar[i] != '\0'; i++) {
-                shape->nEdges = shape->nEdges + ((int)shapeChar[i] - 48)*((int)pow(10, 2 - (i+1)));
+                shape->nEdges = shape->nEdges + ((int)shapeChar[i] - 48)*((int)pow(10, count - (i+1)));
             }
             paramCount++;
             c = fgetc(f);
@@ -542,11 +542,12 @@ void init_shape(Shape* shape) {
                     c = fgetc(f);
                 }
                 shapeChar[count] = '\0';
+                int numLength = count;
                 if(shapeChar[0] == '-') {
                     int param = 0;
                     count = 1;
                     while(shapeChar[count] != '\0') {
-                        param -= ((int)shapeChar[count] - 48)*((int)pow(10, 3 - (count + 1)));
+                        param -= ((int)shapeChar[count] - 48)*((int)pow(10, numLength - (count + 1)));
                         count++;
                     }
                     if(axisCount == 0) {
@@ -578,7 +579,7 @@ void init_shape(Shape* shape) {
                     int param = 0;
                     count = 0;
                     while(shapeChar[count] != '\0') {
-                        param += ((int)shapeChar[count] - 48)*((int)pow(10, 2 - (count + 1)));
+                        param += ((int)shapeChar[count] - 48)*((int)pow(10, numLength - (count + 1)));
                         count++;
                     }
                     if(axisCount == 0) {
@@ -710,7 +711,7 @@ void UpdateShape(Shape* shape, float pitch, float roll, float yaw) {
         }
         // printf("\n");
     }
-    printf("Roll angle: %f\n", shape->rollAngle);
+    // printf("Roll angle: %f\n", shape->rollAngle);
     killMatrix(&pitchMatrix);
     killMatrix(&rollMatrix);
     killMatrix(&yawMatrix);
@@ -774,16 +775,18 @@ int main() {
             UpdateShape(&cube, pitchRate, rollRate, yawRate);
             DrawShape(screen, &cube);
             SDL_UpdateWindowSurface(window);
-            if(cube.pitchAngle < 1.57) {
+            // if(cube.pitchAngle < 1.57) {
                 pitchRate = 0.01;
-            }
-            else {
-                t2 = SDL_GetTicks();
-                printf("time diff: %d\n", t2);
-                pitchRate = 0;
-                killShape(&cube);
-                quit = true;
-            }
+                // rollRate = 0.01;
+                yawRate = 0.01;
+            // }
+            // else {
+            //     t2 = SDL_GetTicks();
+            //     printf("time diff: %d\n", t2);
+            //     pitchRate = 0;
+            //     killShape(&cube);
+            //     quit = true;
+            // }
             cube.pitchAngle += pitchRate;
             cube.rollAngle += rollRate;
             cube.yawAngle += yawRate;
